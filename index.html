@@ -1,61 +1,41 @@
-<!doctype html>
-<html lang="zh-Hant">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="theme-color" content="#121212">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<!doctype html><html lang="zh-Hant"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
 <title>浪人閱讀</title>
-<link rel="stylesheet" href="./style.css?v=v3k_fix2">
-</head>
-<body>
-<header>
-  <div class="bar"><div class="clock">浪人閱讀</div></div>
-  <nav>
-    <button id="tabArticle" aria-pressed="true">文章庫</button>
-    <button id="tabFile">文件庫</button>
-    <button id="tabDaily">日常</button>
-  </nav>
-</header>
-<main>
-  <section id="toolbar" class="toolbar">
-    <div class="chips" id="workChips"><button class="chip active" data-val="">全部</button></div>
-    <input id="q" placeholder="搜尋標題 / 內容（至少 2 字）">
-    <button id="refresh">⟳ 同步</button>
-  </section>
-  <section id="listPanel">
-    <ul id="list"></ul>
-    <div id="loadMoreBox" class="row hidden"><button id="loadMore">載入更多</button></div>
-  </section>
-  <section id="reader" class="readerPanel hidden">
-    <div class="readerTop" aria-hidden="true">
-      <div class="grow"></div>
-      <button id="bookmark_hidden" class="fab small">📍</button>
-    </div>
-    <h2 id="rTitle"></h2>
-    <div id="rMeta" class="meta"></div>
-    <div class="readControls">
-      <span class="meta">字級</span>
-      <div class="seg">
-        <button class="segBtn" data-size="s">A−</button>
-        <button class="segBtn" data-size="m" aria-pressed="true">A</button>
-        <button class="segBtn" data-size="l">A+</button>
-      </div>
-    </div>
-    <div id="rContent" class="prewrap"></div>
-    <div id="progress" class="progress hidden"><span></span></div>
-    <div class="row">
-      <button id="backBottom" class="pillBtn small" onclick="showList()">← 返回列表</button>
-    </div>
-    <button id="bookmark" class="fab small" title="加書籤">📍</button>
-    <button id="bmFloat" class="fab hidden" title="回到書籤">↺</button>
-  </section>
-</main>
-<footer><small>柔黑底・米白字・多選快篩・右滑返回（閱讀畫面）・極簡書籤・CSV 只讀 v3k</small></footer>
-<script src="./app.js?v=v3k_fix2"></script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v=v3k_fix2');}</script>
-</body>
-</html>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="stylesheet" href="./styles.css"/>
+<script src="./config.js"></script>
+<script>
+  (function(){ var m = localStorage.getItem('readingMode') || 'eyecare';
+    document.addEventListener('DOMContentLoaded', ()=>document.body.classList.add(m));
+    var fs = localStorage.getItem('readingFontSize') || '18';
+    document.documentElement.style.setProperty('--fs', fs+'px');
+  })();
+</script>
+</head><body id="reader">
+<div class="toolbar">
+  <div class="brand"><span class="cat" aria-hidden="true"></span><strong>浪人閱讀</strong></div>
+  <div class="grow"></div>
+  <div class="fs">
+    <button id="fsMinus">A-</button>
+    <span class="val" id="fsVal"></span>
+    <button id="fsPlus">A+</button>
+  </div>
+  <div class="modes" style="display:flex;gap:6px;margin-left:8px">
+    <button id="m-dark" title="純黑">●</button>
+    <button id="m-eyecare" title="護眼">◐</button>
+    <button id="m-lightgray" title="淺灰">○</button>
+    <button id="m-paper" title="紙質">▦</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="list-title"><h1>文章庫</h1></div>
+  <ul id="chapterList" class="chapter-list"></ul>
+  <div id="content">
+    <h2 id="chapterTitle">（點選章節以閱讀）</h2>
+    <div id="chapterContent" class="content"></div>
+  </div>
+</div>
+<a href="./settings.html" id="settings-link" aria-label="設定">⚙️ 設定</a>
+<script src="./script.js"></script>
+</body></html>

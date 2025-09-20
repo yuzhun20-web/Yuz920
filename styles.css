@@ -1,25 +1,33 @@
-
-:root{--content-max-width:48rem}
+:root{--content-max-width:48rem; --fs:18px}
 html,body{margin:0;padding:0;height:100%}
-body{font-size:18px;line-height:1.7;-webkit-font-smoothing:antialiased;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Helvetica,Arial,"Noto Sans CJK TC","PingFang TC","Heiti TC",sans-serif}
+body{font-size:var(--fs);line-height:1.7;-webkit-font-smoothing:antialiased;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Helvetica,Arial,"Noto Sans CJK TC","PingFang TC","Heiti TC",sans-serif}
 .container{max-width:var(--content-max-width);margin:0 auto;padding:1rem 1rem 5rem}
-#settings-link{position:fixed;right:12px;bottom:12px;text-decoration:none;font-size:14px;opacity:.7;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.15)}
 h1,h2,h3{margin:.5em 0 .4em;line-height:1.4;font-weight:700;letter-spacing:.2px}
 .chapter-list{list-style:none;padding:0;margin:0}
-.chapter-item{padding:10px 12px;margin:0;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer}
-.chapter-item:hover{opacity:.92}
+.chapter-item{padding:12px 14px;margin:8px 0;border:1px solid rgba(255,255,255,.08);cursor:pointer;border-radius:14px;transition:transform .05s ease}
+.chapter-item:active{transform:scale(.99)}
 .meta{font-size:13px;opacity:.8}
 .content{white-space:pre-wrap;word-break:break-word;margin-top:1rem}
+
 /* Modes */
 body.dark{background:#000;color:#fff}
 body.eyecare{background:#121212;color:#E0E0E0}
 body.lightgray{background:#F5F5F5;color:#222}
 body.paper{background:#FAF9F6;color:#333;font-family:Georgia,"Times New Roman","Noto Serif CJK TC","Songti TC",serif;background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.02) 0,rgba(0,0,0,.02) 1px,transparent 1px,transparent 24px),repeating-linear-gradient(90deg,rgba(0,0,0,.015) 0,rgba(0,0,0,.015) 1px,transparent 1px,transparent 24px);box-shadow:inset 0 0 24px rgba(0,0,0,.05)}
-body.lightgray .chapter-item,body.paper .chapter-item{border-bottom:1px solid rgba(0,0,0,.08)}
+body.lightgray .chapter-item,body.paper .chapter-item{border:1px solid rgba(0,0,0,.08)}
 a{color:inherit}
 body.lightgray a{color:#1a73e8}body.paper a{color:#2b6cb0}
 .badge{display:inline-block;font-size:12px;padding:2px 6px;border-radius:999px;border:1px solid currentColor;opacity:.7;margin-left:6px}
-button{padding:.5rem .8rem;border:1px solid currentColor;background:transparent;border-radius:8px;cursor:pointer}
-.mode-preview{margin-top:1rem;padding:1rem;border-radius:8px;border:1px dashed currentColor;opacity:.9}
-.small{font-size:14px;opacity:.8}
-.alert{margin-top:1rem;padding:.75rem 1rem;border-radius:8px;border:1px solid currentColor;opacity:.8}
+
+/* Quick toolbar */
+.toolbar{position:sticky;top:0;z-index:5;backdrop-filter:saturate(180%) blur(8px);display:flex;gap:8px;align-items:center;padding:.5rem;border-bottom:1px solid currentColor}
+.toolbar .brand{display:flex;align-items:center;gap:8px}
+.brand .cat{width:28px;height:28px;background:url('./assets/images/logo.png') no-repeat center/contain}
+.toolbar button{padding:.35rem .6rem;border:1px solid currentColor;background:transparent;border-radius:8px;cursor:pointer;font-size:14px}
+.toolbar .grow{flex:1}
+.fs{display:flex;gap:6px;align-items:center}
+.fs .val{min-width:2.4em;text-align:center}
+
+#settings-link{position:fixed;right:12px;bottom:12px;text-decoration:none;font-size:14px;opacity:.75;padding:8px 10px;border-radius:8px;border:1px solid currentColor}
+.logo{display:block;width:56px;height:56px;background:url('./assets/images/logo.png') no-repeat center/contain;opacity:.9}
+.list-title{display:flex;gap:12px;align-items:center}

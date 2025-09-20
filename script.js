@@ -1,29 +1,125 @@
 (function(){
   const cfg = window.AppConfig || {};
+  const state = { chapters: [] };
+
   const getMode = () => localStorage.getItem("readingMode") || (cfg.DEFAULT_MODE || "dark");
-  function apply(mode){
+  const getFS = () => parseInt(localStorage.getItem("readingFontSize")||"18",10);
+  const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+
+  function applyMode(mode){
     document.body.classList.remove("dark","eyecare","lightgray","paper");
-    document.body.classList.add(mode);
+    document.body.classList.add(mode || getMode());
+  }
+  function applyFS(px){
+    document.documentElement.style.setProperty('--fs', (px||getFS())+'px');
   }
 
-  // Reader
+  function parseCSV(text){
+    text = text.replace(/^\uFEFF/, '');
+    const lines = text.split(/\r?\n/).filter(Boolean);
+    if(!lines.length) return [];
+    const headers = lines[0].split(',');
+    return lines.slice(1).map(line=>{
+      const cols=[]; let cur='', inQ=false;
+      for(let i=0;i<line.length;i++){ const ch=line[i];
+        if(ch==='"'){ if(inQ && line[i+1]==='"'){ cur+='"'; i++; } else { inQ=!inQ; } }
+        else if(ch===',' && !inQ){ cols.push(cur); cur=''; }
+        else cur+=ch;
+      } cols.push(cur);
+      const row={}; headers.forEach((h,i)=>row[h.trim()]=(cols[i]||'').trim()); return row;
+    });
+  }
+
+  async function loadData(){
+    if(cfg.DATA_SOURCE==="csv"){
+      try{
+        const res = await fetch(cfg.CSV_PATH);
+        if(!res.ok) throw new Error('CSV 載入失敗');
+        const txt = await res.text();
+        return parseCSV(txt);
+      }catch(e){ console.warn(e); return []; }
+    } else if(cfg.DATA_SOURCE==="api" && cfg.API_ENDPOINT){
+      const res = await fetch(cfg.API_ENDPOINT, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(cfg.API_PARAMS||{})});
+      const data = await res.json();
+      return (data.rows || data || []);
+    }
+    return [];
+  }
+
+  function renderList(){
+    const ul = document.getElementById("chapterList"); if(!ul) return;
+    ul.innerHTML="";
+    const t=cfg.TITLE_FIELD,s=cfg.SUBTITLE_FIELD,p=cfg.SUBPART_FIELD,id=cfg.ID_FIELD,st=cfg.STATUS_FIELD;
+    state.chapters.forEach(ch=>{
+      const li=document.createElement("li"); li.className="chapter-item"; li.dataset.id=ch[id];
+      const title=(ch[t]||"").toString(), sub=(ch[s]||"").toString(), subp=(ch[p]||"").toString(), status=(ch[st]||"").toString();
+      li.innerHTML=`<div><strong>${title}</strong> ${sub} ${subp} ${status?`<span class="badge">${status}</span>`:''}</div>`;
+      li.addEventListener("click", ()=>openChapter(ch[id]));
+      ul.appendChild(li);
+    });
+  }
+
+  function openChapter(id){
+    const idk=cfg.ID_FIELD, ck=cfg.CONTENT_FIELD, tk=cfg.TITLE_FIELD, sk=cfg.SUBTITLE_FIELD, pk=cfg.SUBPART_FIELD, uk=cfg.URL_FIELD;
+    const ch=state.chapters.find(x=>(x[idk]||'').toString()===(id||'').toString()); if(!ch) return;
+    const titleEl=document.getElementById("chapterTitle"); const contentEl=document.getElementById("chapterContent");
+    if(titleEl) titleEl.textContent=[ch[tk], ch[sk], ch[pk]].filter(Boolean).join(" ");
+    const body=(ch[ck]||"").toString(); const url=(ch[uk]||"").toString();
+    if(contentEl){
+      if(body){ contentEl.textContent=body; }
+      else if(url){ contentEl.innerHTML=`<a href="${url}" target="_blank" rel="noopener">在原站閱讀本章（來源連結）</a>`; }
+      else { contentEl.textContent="（尚未搬入內容。可在表格的「內容」欄貼上本文，或填來源URL）"; }
+    }
+    const ct=document.getElementById("content"); if(ct) ct.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  function initToolbar(){
+    const fsVal = document.getElementById('fsVal');
+    const setDisplay = ()=>{ if(fsVal) fsVal.textContent = getFS()+'px'; };
+    setDisplay();
+
+    document.getElementById('fsMinus').addEventListener('click', ()=>{
+      const v = clamp(getFS()-1, 14, 28); localStorage.setItem('readingFontSize', String(v)); applyFS(v); setDisplay();
+    });
+    document.getElementById('fsPlus').addEventListener('click', ()=>{
+      const v = clamp(getFS()+1, 14, 28); localStorage.setItem('readingFontSize', String(v)); applyFS(v); setDisplay();
+    });
+
+    const modes=[['dark','純黑'],['eyecare','護眼'],['lightgray','淺灰'],['paper','紙質']];
+    modes.forEach(([m])=>{
+      const btn=document.getElementById('m-'+m);
+      if(btn) btn.addEventListener('click', ()=>{
+        localStorage.setItem('readingMode', m);
+        applyMode(m);
+      });
+    });
+  }
+
   async function initReader(){
-    apply(getMode()); // 讀取時先套用選擇的模式
-    // 其餘章節載入邏輯維持你原本版本（若有）
+    applyMode();               // 套用主題
+    applyFS();                 // 套用字級
+    initToolbar();             // 設定列
+    state.chapters = await loadData();
+    renderList();
   }
 
-  // Settings (全域套用)
   function initSettings(){
-    // 先以目前全域模式渲染本頁
-    apply(getMode());
-
-    // 切換時：1) 寫入 localStorage、2) 立即更新本頁、3) 回閱讀頁也會套用
+    applyMode();
+    applyFS();
+    const now = document.getElementById("currentMode");
+    if(now) now.textContent = getMode();
     window.chooseMode = (mode)=>{
       localStorage.setItem("readingMode", mode);
-      apply(mode);
-      const now = document.getElementById("currentMode");
+      applyMode(mode);
       if(now) now.textContent = mode + "（已套用到閱讀器）";
     };
+  }
+
+  // Service Worker
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', ()=>{
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
   }
 
   document.addEventListener("DOMContentLoaded", ()=>{

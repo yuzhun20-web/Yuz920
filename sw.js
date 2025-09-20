@@ -1,8 +1,9 @@
 
-const CACHE = 'reader-v3k-full-v1758358748';
+const CACHE = 'ronin-reader-cat-toolbar-v1758360263';
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then(cache => cache.addAll([
-    './','./index.html','./settings.html','./styles.css','./script.js','./config.js','./manifest.json'
+    './','./index.html','./settings.html','./styles.css','./script.js','./config.js','./manifest.json',
+    './icons/icon-192.png','./icons/icon-512.png','./assets/novel_chapters.csv','./assets/images/logo.png'
   ])));
 });
 self.addEventListener('activate', (e) => {

@@ -1,11 +1,18 @@
 <!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-<title>設定（會影響閱讀器）</title>
+<title>設定 · 浪人閱讀</title>
 <link rel="stylesheet" href="./styles.css"/>
 <script src="./config.js"></script>
-<script>(function(){const m=localStorage.getItem("readingMode")||(window.AppConfig&&window.AppConfig.DEFAULT_MODE)||"dark";document.addEventListener("DOMContentLoaded",()=>document.body.classList.add(m));})();</script>
+<script>
+  (function(){ var m = localStorage.getItem('readingMode') || 'eyecare';
+    document.addEventListener('DOMContentLoaded', ()=>document.body.classList.add(m));
+    var fs = localStorage.getItem('readingFontSize') || '18';
+    document.documentElement.style.setProperty('--fs', fs+'px');
+  })();
+</script>
 </head><body id="settingsPage">
 <div class="container">
+  <span class="logo" title="浪人閱讀"></span>
   <h1>外觀設定</h1>
   <p class="small">目前模式：<strong id="currentMode"></strong></p>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -14,7 +21,15 @@
     <button onclick="chooseMode('lightgray')">淺灰模式</button>
     <button onclick="chooseMode('paper')">紙張質感</button>
   </div>
-  <div class="mode-preview">切換將<strong>立即儲存</strong>並且會在回到閱讀器時生效。</div>
+  <div class="mode-preview">切換將<strong>立即儲存</strong>，回到閱讀器會跟著變。</div>
+
+  <h2 style="margin-top:1.2em;">字體大小</h2>
+  <p class="small">閱讀頁也會同步：</p>
+  <div style="display:flex;gap:6px;align-items:center">
+    <button onclick="localStorage.setItem('readingFontSize', Math.max(14,(parseInt(localStorage.getItem('readingFontSize')||'18',10)-1)) );location.reload()">A-</button>
+    <button onclick="localStorage.setItem('readingFontSize', Math.min(28,(parseInt(localStorage.getItem('readingFontSize')||'18',10)+1)) );location.reload()">A+</button>
+  </div>
+
   <p style="margin-top:1.2em;"><a href="./index.html">⬅️ 回閱讀</a></p>
 </div>
 <script src="./script.js"></script>
