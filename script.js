@@ -8,8 +8,8 @@
 
   // Reader
   async function initReader(){
-    apply(getMode());
-    // 其餘章節載入邏輯保持你現有版本
+    apply(getMode()); // 讀取時先套用選擇的模式
+    // 其餘章節載入邏輯維持你原本版本（若有）
   }
 
   // Settings (全域套用)
