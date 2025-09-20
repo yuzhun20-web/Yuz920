@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-<title>設定</title>
+<title>設定（會影響閱讀器）</title>
 <link rel="stylesheet" href="./styles.css"/>
 <script src="./config.js"></script>
 <script>(function(){const m=localStorage.getItem("readingMode")||(window.AppConfig&&window.AppConfig.DEFAULT_MODE)||"dark";document.addEventListener("DOMContentLoaded",()=>document.body.classList.add(m));})();</script>
@@ -14,13 +14,7 @@
     <button onclick="chooseMode('lightgray')">淺灰模式</button>
     <button onclick="chooseMode('paper')">紙張質感</button>
   </div>
-  <div class="mode-preview">（本頁背景與字體會同步目前模式，切換會即時生效）</div>
-
-  <h2 style="margin-top:1.2em;">資料來源</h2>
-  <p>目前資料來源：<code id="sourceLabel"></code></p>
-  <p>CSV 路徑：<code id="csvPath"></code></p>
-  <p>API Endpoint：<code id="apiEndpoint"></code></p>
-
+  <div class="mode-preview">切換將<strong>立即儲存</strong>並且會在回到閱讀器時生效。</div>
   <p style="margin-top:1.2em;"><a href="./index.html">⬅️ 回閱讀</a></p>
 </div>
 <script src="./script.js"></script>
